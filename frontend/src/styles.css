@@ -1,0 +1,9 @@
+.App {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: url("./farming-less-agriculture-svgrepo-com.svg");
+  background-repeat: repeat; /* Repeat the SVG */
+  background-size: auto; /* Keep the SVG at its actual size */
+  font-family: "Arial", sans-serif;
+}
