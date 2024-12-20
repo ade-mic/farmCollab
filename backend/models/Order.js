@@ -4,14 +4,18 @@ const { Schema, model } = mongoose;
 
 const OrderSchema = new Schema(
   {
+    buyerId: {
+      type: String,
+      ref: "User",
+       required: true
+    },
     inventoryId: {
       type: String,
       ref: "Inventory",
       required: true,
     },
     quantity: { type: Number, required: true },
-    unit: {type: String, required: true},
-    totalPrice: { type: Number, required: true },
+    totalPrice: { type: Number, required: true, default: 0 },
     status: {
       type: String,
       enum: ["Pending", "Shipped", "Delivered"],

@@ -5,9 +5,9 @@ class OrderController {
   // Create a new order
   static async placeOrder(req, res) {
     try {
-      const inventoryId = req.params;
+      const { inventoryId } = req.params;
       const buyerId = req.user.id
-      const { status, deliveryDate } = req.body;
+      const { quantity, status, deliveryDate } = req.body;
 
       // validate input
       if (!inventoryId || quantity <=0 ) {
@@ -37,9 +37,6 @@ class OrderController {
         message: `Insufficient stock. Only ${inventoryItem.quantity} ${inventoryItem.unit}`})
       }
 
-      productName = inventoryItem.name;
-      productUnit = inventoryItem.unit;
-
           // Calculate total price
       const totalPrice = inventoryItem.pricePerUnit * quantity;
 
@@ -49,10 +46,8 @@ class OrderController {
         inventoryId,
         quantity,
         totalPrice,
-        productName,
-        productUnit,
-        status: status || "Pending",
-        deliveryDate,
+        status: status,
+        deliveryDate: new Date(deliveryDate),
       });
 
       // Update inventory quantity
@@ -76,7 +71,7 @@ class OrderController {
   // Get all orders
   static async getAllOrders(req, res) {
     try {
-      const orders = await Order.find().populate("buyerId", "name").populate("farmerId", "name");
+      const orders = await Order.find().populate("buyerId", "name").populate({path:"inventoryId", select: "name unit"});
       res.status(200).json({
         success: true,
         orders,
@@ -95,7 +90,9 @@ class OrderController {
     try {
       const { id } = req.params;
 
-      const order = await Order.findById(id).populate("buyerId", "name").populate("farmerId", "name");
+      const order = await Order.findById(id)
+        .populate("buyerId", "name")
+        .populate({path:"inventoryId", select: "name unit"});
 
       if (!order) {
         return res.status(404).json({
@@ -117,6 +114,46 @@ class OrderController {
     }
   }
 
+  static async updateOrder(req, res) {
+    try {
+      const { id } = req.params;
+      const { quantity, deliveryDate } = req.body;
+      if (!quantity || quantity <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid input data",
+        });
+      }
+      const order = await Order.findById(id);
+
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Order not found",
+        });
+      }
+      const { pricePerUnit } = await Inventory.findById(order.inventoryId).select('pricePerUnit');
+      const totalPrice = pricePerUnit * quantity;
+      order.quantity = quantity;
+      order.totalPrice = totalPrice;
+      if (deliveryDate) {
+        order.deliveryDate = new Date(deliveryDate);
+      }
+      await order.save();
+      res.status(200).json({
+        success: true,
+        message: "Order updated successfully",
+        order,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error updating order",
+        error: error.message,
+      });
+    }
+  }
+
   // Update order status
   static async updateOrderStatus(req, res) {
     try {
@@ -133,7 +170,7 @@ class OrderController {
       const order = await Order.findByIdAndUpdate(
         id,
         { status },
-        { new: true } // Return the updated document
+        { new: true } 
       );
 
       if (!order) {

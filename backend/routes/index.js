@@ -6,6 +6,7 @@ import FarmController from '../controllers/farmController.js';
 import InventoryController from '../controllers/inventoryController.js';
 import isAuthenticate from '../middleware/authenticate.js';
 import { authorizeRoles } from '../middleware/authorization.js';
+import EnsureOwnership from '../middleware/ensureOwnership.js';
 
 
 const router = express.Router();
@@ -30,11 +31,13 @@ router.get('/projects/:id', ProjectController.getProjectById);
 router.put('/projects/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
+  EnsureOwnership.project,
    ProjectController.updateProject
   );
 router.delete('/projects/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
+  EnsureOwnership.project,
   ProjectController.deleteProject
 );
 // Route for subscribing to a project
@@ -54,11 +57,13 @@ router.get('/farms/:id', FarmController.getFarmById);
 router.put('/farms/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
-   FarmController.updateFarm
+  EnsureOwnership.farm,
+  FarmController.updateFarm
 );
 router.delete('/farms/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
+  EnsureOwnership.farm,
   FarmController.deleteFarm);
 
 
@@ -73,11 +78,13 @@ router.get('/inventory/:id', InventoryController.getInventoryById);
 router.put('/inventory/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
+  EnsureOwnership.inventory,
   InventoryController.updateInventory
 );
 router.delete('/inventory/:farmId/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
+  EnsureOwnership.inventory,
   InventoryController.deleteInventory
 );
 
@@ -88,19 +95,24 @@ router.post('/orders/:inventoryId',
   OrderController.placeOrder
 );
 router.get('/orders',
-  isAuthenticate,
   OrderController.getAllOrders
 );
 router.get('/orders/:id',
-  isAuthenticate,
   OrderController.getOrderById
+);
+router.put('/orders/:id/',
+  isAuthenticate,
+  EnsureOwnership.order,
+  OrderController.updateOrder
 );
 router.put('/orders/:id/status',
   isAuthenticate,
+  EnsureOwnership.order,
   OrderController.updateOrderStatus
 );
 router.delete('/orders/:id',
   isAuthenticate,
+  EnsureOwnership.order,
   OrderController.deleteOrder
 );
 
