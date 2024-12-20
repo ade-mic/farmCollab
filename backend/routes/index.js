@@ -14,7 +14,7 @@ router.post('/register',  UserController.createUser);
 router.post('/login', UserController.userLogin);
 router.get('/me', isAuthenticate, UserController.getMe);
 router.post('/logout', UserController.logout);
-router.get('/users',isAuthenticate, UserController.getAllUsers);
+// router.get('/users',isAuthenticate, UserController.getAllUsers);
 // router.get('/users/:id', UserController.getUserById);
 router.get('/users/:id', isAuthenticate, UserController.getUserById);
 router.put('/users/:id', isAuthenticate, UserController.updateUser);
@@ -37,33 +37,72 @@ router.delete('/projects/:id',
   authorizeRoles('Farmer'),
   ProjectController.deleteProject
 );
-
 // Route for subscribing to a project
-router.post('/projects/:id/subscribe', isAuthenticate, ProjectController.subscribeToProject);
-
-// Order Routes
-router.post('/orders',
-  isAuthenticate,
-  authorizeRoles('Farmer'),
-  OrderController.createOrder);
-router.get('/orders', OrderController.getAllOrders);
-router.get('/orders/:id', OrderController.getOrderById);
-router.put('/orders/:id/status', OrderController.updateOrderStatus);
-router.delete('/orders/:id', OrderController.deleteOrder);
+router.post('/projects/:id/subscribe',
+   isAuthenticate,
+   ProjectController.subscribeToProject
+);
 
 // Farm Routes
-router.post('/farms', FarmController.createFarm);
+router.post('/farms',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+  FarmController.createFarm
+);
 router.get('/farms', FarmController.getAllFarms);
 router.get('/farms/:id', FarmController.getFarmById);
-router.put('/farms/:id', FarmController.updateFarm);
-router.delete('/farms/:id', FarmController.deleteFarm);
+router.put('/farms/:id',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+   FarmController.updateFarm
+);
+router.delete('/farms/:id',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+  FarmController.deleteFarm);
+
 
 // Inventory Routes
-router.post('/inventories', InventoryController.createInventory);
-router.get('/inventories', InventoryController.getAllInventories);
-router.get('/inventories/:id', InventoryController.getInventoryById);
-router.put('/inventories/:id', InventoryController.updateInventory);
-router.delete('/inventories/:id', InventoryController.deleteInventory);
+router.post('/inventory/:farmId',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+  InventoryController.createInventory
+);
+router.get('/inventory', InventoryController.getAllInventories);
+router.get('/inventory/:id', InventoryController.getInventoryById);
+router.put('/inventory/:id',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+  InventoryController.updateInventory
+);
+router.delete('/inventory/:farmId/:id',
+  isAuthenticate,
+  authorizeRoles('Farmer'),
+  InventoryController.deleteInventory
+);
+
+
+// Order Routes
+router.post('/orders/:inventoryId',
+  isAuthenticate,
+  OrderController.placeOrder
+);
+router.get('/orders',
+  isAuthenticate,
+  OrderController.getAllOrders
+);
+router.get('/orders/:id',
+  isAuthenticate,
+  OrderController.getOrderById
+);
+router.put('/orders/:id/status',
+  isAuthenticate,
+  OrderController.updateOrderStatus
+);
+router.delete('/orders/:id',
+  isAuthenticate,
+  OrderController.deleteOrder
+);
 
 
 export default router

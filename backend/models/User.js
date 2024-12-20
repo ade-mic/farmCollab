@@ -6,12 +6,6 @@ import bcrypt from 'bcryptjs';
 const { Schema,  model } = mongoose;
 
 const UserSchema = new Schema({
-  userId: {
-    type: String,
-    default: () => randomUUID(),
-    unique: true,
-    index: true,
-  },
   name: {
     type: String,
     required: true,
@@ -77,7 +71,7 @@ UserSchema.methods.comparePassword = async function (enterPassword) {
 
 UserSchema.methods.jwtToken = function () {
   const user = this
-  return jwt.sign({ id: user.userId, role: user.role }, process.env.SECRETKEY, {
+  return jwt.sign({ id: user._id, role: user.role }, process.env.SECRETKEY, {
     expiresIn: '1h',
   })
 }

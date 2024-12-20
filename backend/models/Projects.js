@@ -13,6 +13,7 @@ const ProjectSchema = new Schema({
     goalAmount: {
       type: Number,
       required: true,
+      default: 0
     },
     currency: {
       type: String,
@@ -20,13 +21,21 @@ const ProjectSchema = new Schema({
     },
     currentAmount: {
       type: Number,
+      default: 0
     },
     creatorId: {
-      type: String,
+      type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: true,
     },
-    participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    participants: [
+      {
+        userId: {type:  String,  required:true, ref: 'User'},
+        amountContributed: {
+          type: Number,
+          default: 0
+        }
+      }
+    ],
     createdAt: {
       type: Date,
       default: Date.now 

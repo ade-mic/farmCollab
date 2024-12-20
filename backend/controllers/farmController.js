@@ -5,8 +5,9 @@ class FarmController {
   // Create a new farm
   static async createFarm(req, res) {
     try {
-      const { name, location, owner } = req.body; 
-      const farm = await Farm.create({ name, location, owner });
+      const { name, location, size } = req.body;
+      const owner = req.user.id
+      const farm = await Farm.create({name, location, owner, size });
       res.status(201).json({ success: true, message: "Farm created successfully", farm });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error creating farm", error: error.message });

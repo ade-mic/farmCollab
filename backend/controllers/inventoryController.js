@@ -1,12 +1,26 @@
+import Farm from "../models/Farm.js";
 import Inventory from "../models/Inventory.js";
 
 class InventoryController {
   // Create an inventory
   static async createInventory(req, res) {
     try {
-      const { farmId, produce } = req.body;
-      const inventory = await Inventory.create({ farmId, produce });
-      res.status(201).json({ success: true, message: "Inventory created successfully", inventory });
+      const { farmId } = req.params
+      const { name, quantity, pricePerUnit, unit, available }  = req.body;
+      const inventoryItem = new Inventory({
+        farmId,
+        name,
+        quantity,
+        pricePerUnit,
+        unit,
+        available
+      });
+      const savedItem = await inventoryItem.save();
+      await Farm.findByIdAndUpdate(farmId, {
+        $push: { inventory: savedItem._id},
+      });
+
+      res.status(201).json({ success: true, message: "Inventory created successfully", savedItem });
     } catch (error) {
       res.status(500).json({ success: false, message: "Error creating inventory", error: error.message });
     }
@@ -40,7 +54,7 @@ class InventoryController {
   static async updateInventory(req, res) {
     try {
       const { id } = req.params;
-      const updatedInventory = await Inventory.findByIdAndUpdate(id, req.body, { new: true });
+      const updatedInventory = await Inventory.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
       if (!updatedInventory) {
         return res.status(404).json({ success: false, message: "Inventory not found" });
       }
@@ -53,8 +67,14 @@ class InventoryController {
   // Delete inventory
   static async deleteInventory(req, res) {
     try {
-      const { id } = req.params;
+      const { farmId, id } = req.params;
       const deletedInventory = await Inventory.findByIdAndDelete(id);
+
+      // Remove reference from the farm
+      await Farm.findByIdAndUpdate(farmId, {
+        $pull: { inventory: id },
+      });
+
       if (!deletedInventory) {
         return res.status(404).json({ success: false, message: "Inventory not found" });
       }

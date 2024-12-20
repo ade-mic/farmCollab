@@ -68,47 +68,60 @@ class ProjectController {
     // Subscribe to a project by contributing money
     static async subscribeToProject(req, res) {
       try {
-        const { id } = req.params;  // Project ID from URL
-        const { contributionAmount } = req.body;  // Amount contributed by the user
-  
-        // Ensure contribution amount is a positive number
-        if (contributionAmount <= 0) {
-          return res.status(400).json({ success: false, message: "Contribution amount must be greater than zero" });
+        const { id } = req.params; // Project ID from URL
+        const { contributionAmount } = req.body; // Amount contributed by the user
+        const userId = req.user.id; // Logged-in user's ID from the JWT or session
+    
+        // Validate contribution amount
+        if (contributionAmount <= 0 || isNaN(contributionAmount)) {
+          return res.status(400).json({
+            success: false,
+            message: "Contribution amount must be a positive number",
+          });
         }
-  
+    
         // Find the project by ID
         const project = await Project.findById(id);
-  
+    
         if (!project) {
           return res.status(404).json({ success: false, message: "Project not found" });
         }
-  
+    
+        // Check if the user is already a participant
+        const existingParticipant = project.participants.find(
+          (participant) => participant.userId === userId
+        );
+    
+        if (existingParticipant) {
+          // Update the existing participant's contribution
+          existingParticipant.amountContributed += contributionAmount;
+        } else {
+          // Add a new participant with userId and contribution
+          project.participants.push({
+            userId,
+            amountContributed: contributionAmount,
+          });
+        }
+    
         // Update the current amount of the project
         project.currentAmount += contributionAmount;
-  
-        // Add the user to the participants array
-        const userId = req.user.id;  // Get the logged-in user's ID from the JWT or session
-        if (!project.participants.includes(userId)) {
-          project.participants.push(userId);  // Add user if not already a participant
-        }
-  
+    
         // Save the updated project
         await project.save();
-  
-        res.status(200).json({ 
-          success: true, 
-          message: "Successfully subscribed to the project", 
-          project 
+    
+        res.status(200).json({
+          success: true,
+          message: "Successfully subscribed to the project",
+          project,
         });
       } catch (error) {
-        res.status(500).json({ 
-          success: false, 
-          message: "Error subscribing to project", 
-          error: error.message 
+        res.status(500).json({
+          success: false,
+          message: "Error subscribing to project",
+          error: error.message,
         });
       }
     }
-  
 }
 
 export default ProjectController;

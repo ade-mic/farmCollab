@@ -1,14 +1,7 @@
 import mongoose from "mongoose";
-import { randomUUID } from 'crypto';
 const { Schema, model } = mongoose;
 
 const FarmSchema = new Schema({
-  inventoryId: {
-    type: String,
-    default: () => randomUUID(),
-    unique: true,
-    index: true,
-  },
   name: {
     type: String,
     required: true
@@ -32,6 +25,7 @@ const FarmSchema = new Schema({
   cropsGrown: {
     type: [String]
   },
+  inventory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Inventory' }],
   isAvailableForPooling: {
     type: Boolean,
     default: false
