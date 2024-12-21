@@ -7,6 +7,7 @@ class UserController {
   // Create a new user
   static async createUser(req, res) {
     try {
+      console.log("Data received from frontend:", req.body);
       // validate user data
       const { err } = validateUserSignup(req.body);
       if (err){

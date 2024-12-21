@@ -11,7 +11,9 @@ const HeroSection = () => {
         sustainable future.
       </p>
       <div style={styles.buttonGroup}>
+        <a href="/createAccount">
         <button style={styles.primaryButton}>Sign Up</button>
+        </a>
         <button style={styles.secondaryButton}>Learn More</button>
       </div>
     </section>

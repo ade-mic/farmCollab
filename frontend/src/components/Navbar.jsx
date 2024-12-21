@@ -1,13 +1,22 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+  const handleCreateAccount = () => {
+    navigate("/createAccount");
+  };
+
   return (
     <AppBar
       position="static"
@@ -21,13 +30,17 @@ export default function Navbar() {
           aria-label="menu"
           sx={{ mr: 2 }}
         >
+          <a href="/" style={{ color: "white", textDecoration: "none" }}>
           <AgricultureIcon />
+          </a>
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <a href="/" style={{ color: "white", textDecoration: "none" }}>
           Home
+          </a>
         </Typography>
-        <Button color="inherit">Login</Button>
-        <Button color="inherit">Create Accouunt</Button>
+        <Button color="inherit" onClick={handleLogin} >Login</Button>
+        <Button color="inherit" onClick={handleCreateAccount} >Create Accouunt</Button>
       </Toolbar>
     </AppBar>
   );

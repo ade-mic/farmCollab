@@ -52,7 +52,7 @@ const styles = {
   footer: {
     backgroundColor: "#28a745",
     color: "#fff",
-    padding: "40px 20px",
+    padding: "5px 10px",
     textAlign: "center",
   },
   container: {
@@ -64,7 +64,7 @@ const styles = {
   },
   about: {
     flex: 1,
-    paddingRight: "20px",
+    paddingRight: "10px",
   },
   links: {
     flex: 1,
@@ -79,14 +79,14 @@ const styles = {
   },
   text: {
     fontSize: "1rem",
-    marginBottom: "10px",
+    marginBottom: "5px",
   },
   list: {
     listStyleType: "none",
     padding: 0,
   },
   listItem: {
-    marginBottom: "10px",
+    marginBottom: "5px",
   },
   link: {
     color: "#fff",
@@ -98,9 +98,9 @@ const styles = {
     color: "#28a745",
   },
   footerBottom: {
-    marginTop: "20px",
+    marginTop: "1px",
     borderTop: "1px solid #28a745",
-    paddingTop: "20px",
+    paddingTop: "1px",
   },
   footerText: {
     fontSize: "1rem",

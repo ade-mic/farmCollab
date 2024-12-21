@@ -6,9 +6,8 @@ class DBClient {
     const dbName = process.env.DB_NAME || 'farmCollab';
 // correct initiation
     mongoose
-      .connect(url)
+      .connect(`${url}/${dbName}`)
       .then(() => {
-        this.db = mongoose.connection.useDb(dbName);
         console.log("Database connected successfully");
       })
       .catch((err) => {
