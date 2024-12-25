@@ -83,6 +83,18 @@ class InventoryController {
       res.status(500).json({ success: false, message: "Error deleting inventory", error: error.message });
     }
   }
+
+    // Get all inventory items associated with a user
+  static async getUserInventory(req, res) {
+    try {
+      const userId = req.user.id;
+      const inventory = await Inventory.find({ userId });
+      res.status(200).json({ success: true, inventory });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error fetching user's inventory", error: error.message });
+    }
+  }
+  
 }
 
 export default InventoryController;

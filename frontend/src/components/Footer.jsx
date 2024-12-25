@@ -50,10 +50,14 @@ const Footer = () => {
 
 const styles = {
   footer: {
+    margin: "10% 0 0 0",
+    postion: "fixed",
+    bottom: 0,
+    Width: "100%",
     backgroundColor: "#28a745",
     color: "#fff",
-    padding: "5px 10px",
     textAlign: "center",
+    borderRadius: "20px",
   },
   container: {
     display: "flex",

@@ -65,6 +65,16 @@ class FarmController {
       res.status(500).json({ success: false, message: "Error deleting farm", error: error.message });
     }
   }
+
+  static async getUserFarms(req, res) {
+    try {
+      const farms = await Farm.find({ owner: req.user.id }).populate("owner", "name");
+      res.status(200).json({ success: true, farms });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error fetching farms", error: error.message });
+    }
+  }
+
 }
 
 export default FarmController;

@@ -1,42 +1,44 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import AuthForm from "../components/AuthForm.jsx";
-import { createUser } from "../api.js";
-import { useState } from "react";
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthForm from '../components/AuthForm';
+import { createUser } from '../api';
+import { AuthContext } from '../context/AuthContext';
 
-const createAccountPage  = () => { 
+const CreateAccount = () => {
   const navigate = useNavigate();
-  const [error, setErrorMessage] = useState("");
+  const { login } = useContext(AuthContext);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const fields = [
-    { label: "Name", type: "text", name: "name",},
-    { label: "Email", type: "email", name: "email" },
-    { label: "Password", type: "password", name: "password" },
-    { label: "Confirm Password", type: "password", name: "confirmPassword" },
-    { label: "Role", type: "select", name: "role", options: ['Farmer', 'Buyer', 'Distributor', 'NGO'] },
+    { label: 'Name', type: 'text', name: 'name' },
+    { label: 'Email', type: 'email', name: 'email' },
+    { label: 'Password', type: 'password', name: 'password' },
+    { label: 'Confirm Password', type: 'password', name: 'confirmPassword' },
+    { label: 'Role', type: 'select', name: 'role', options: ['Farmer', 'Buyer', 'Distributor', 'NGO'] },
   ];
 
-    const handleSumbit = async (formData) => {
-      try {
-        const response = await createUser(formData);
-        if (response.status === 201) {
-          console.log(response.data);
-          navigate("/Login");
-        }
-      } catch (error) {
-        setErrorMessage(error.response?.data?.message || "An error occurred. Please try again.");
+  const handleSubmit = async (formData) => {
+    try {
+      const response = await createUser(formData);
+      if (response.status === 200) {
+        login(response.data.token);
+        navigate('/user-home');
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'An error occurred. Please try again.');
     }
   };
 
   return (
     <div>
-      <AuthForm title="Create Account" fields={fields} onSubmit={handleSumbit} errorMessage={error} />
-      <div style={{ textAlign: "center" }}>
-        <p>Already have an account? <a style={{textDecoration: 'none'}} href="/Login">Login</a></p>
+      <AuthForm title="Create Account" fields={fields} onSubmit={handleSubmit} errorMessage={errorMessage} />
+      <div style={{ textAlign: 'center' }}>
+        <p>
+          Already have an account? <a style={{ textDecoration: 'none' }} href="/login">Login</a>
+        </p>
       </div>
     </div>
   );
+};
 
-}
-
-export default createAccountPage;
+export default CreateAccount;

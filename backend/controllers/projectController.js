@@ -122,6 +122,17 @@ class ProjectController {
         });
       }
     }
+
+      // List all projects associated with a user
+  static async getProjectsByUser(req, res) {
+    try {
+      const userId = req.user.id;
+      const projects = await Project.find({ creatorId: userId }).populate("participants", "name");
+      res.status(200).json({ success: true, projects });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error fetching user's projects", error: error.message });
+    }
+  }
 }
 
 export default ProjectController;

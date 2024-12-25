@@ -46,6 +46,10 @@ router.post('/projects/:id/subscribe',
    ProjectController.subscribeToProject
 );
 
+router.get('/user-projects',
+  isAuthenticate,
+  ProjectController.getProjectsByUser);
+
 // Farm Routes
 router.post('/farms',
   isAuthenticate,
@@ -64,7 +68,11 @@ router.delete('/farms/:id',
   isAuthenticate,
   authorizeRoles('Farmer'),
   EnsureOwnership.farm,
-  FarmController.deleteFarm);
+  FarmController.deleteFarm
+);
+router.get('/user-farms', isAuthenticate,
+   FarmController.getUserFarms
+);
 
 
 // Inventory Routes
@@ -87,6 +95,7 @@ router.delete('/inventory/:farmId/:id',
   EnsureOwnership.inventory,
   InventoryController.deleteInventory
 );
+router.get('/user-inventory', isAuthenticate, InventoryController.getUserInventory);
 
 
 // Order Routes

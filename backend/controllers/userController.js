@@ -7,7 +7,6 @@ class UserController {
   // Create a new user
   static async createUser(req, res) {
     try {
-      console.log("Data received from frontend:", req.body);
       // validate user data
       const { err } = validateUserSignup(req.body);
       if (err){
@@ -41,7 +40,7 @@ class UserController {
         expiresIn: 3000,
         httpOnly: true,
       }
-      return res.status(200).cookies('token', token, options).json({
+      return res.status(200).cookie('token', token, options).json({
         message: 'Signup succesful',
         token,
       })
@@ -83,6 +82,7 @@ class UserController {
 
       return res.status(200).cookie('token', token, options).json({
         message: 'Login successful',
+        id: user._id,
         token,
       })
     } catch (error) {
@@ -92,7 +92,7 @@ class UserController {
 
   // Get me, Userprofile
   static async getMe(req, res, next) {
-    const user = await User.findOne({ email: req.body.email});
+    const user = await User.findOne({ _id: req.user._id }).select('-password');
     if (!user) {
       return res.status(200).json({
         message: 'User not found'
