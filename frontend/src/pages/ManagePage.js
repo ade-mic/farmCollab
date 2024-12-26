@@ -6,15 +6,23 @@ import {
   createFarm,
   createProject,
   createInventory,
+  updateProject,
+  updateInventory,
+  updateFarm,
+  deleteProject,
+  deleteInventory,
+  deleteFarm,
 } from "../api";
 import CurrencyInput from "../components/CurrencyInput";
-
+import FarmInput from "../components/FarmInput";
 
 const ManagePage = () => {
   const [entity, setEntity] = useState("projects");
   const [data, setData] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [formData, setFormData] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -48,6 +56,7 @@ const ManagePage = () => {
   const handleFormToggle = () => {
     setFormVisible(!formVisible);
     setFormData({});
+    setEditMode(false);
   };
 
   const handleInputChange = (e) => {
@@ -58,20 +67,65 @@ const ManagePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (editMode) {
+        switch (entity) {
+          case "projects":
+            await updateProject(selectedItemId, formData);
+            break;
+          case "inventory":
+            await updateInventory(selectedItemId, formData);
+            break;
+          case "farms":
+            await updateFarm(selectedItemId, formData);
+            break;
+          default:
+            throw new Error("Invalid entity");
+        }
+      } else {
+        switch (entity) {
+          case "projects":
+            await createProject(formData);
+            break;
+          case "inventory":
+            await createInventory(formData);
+            break;
+          case "farms":
+            await createFarm(formData);
+            break;
+          default:
+            throw new Error("Invalid entity");
+        }
+      }
+      setFormVisible(false);
+      fetchData();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleEdit = (itemId) => {
+    const selectedItem = data.find((item) => item._id === itemId);
+    setFormData(selectedItem);
+    setEditMode(true);
+    setSelectedItemId(itemId);
+    setFormVisible(true);
+  };
+
+  const handleDelete = async (itemId) => {
+    try {
       switch (entity) {
         case "projects":
-          await createProject(formData);
+          await deleteProject(itemId);
           break;
         case "inventory":
-          await createInventory(formData);
+          await deleteInventory(itemId);
           break;
         case "farms":
-          await createFarm(formData);
+          await deleteFarm(itemId);
           break;
         default:
           throw new Error("Invalid entity");
       }
-      setFormVisible(false);
       fetchData();
     } catch (error) {
       setError(error.message);
@@ -115,6 +169,7 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.title || ""}
               />
               <input
                 name="description"
@@ -122,8 +177,15 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.description || ""}
               />
-              <CurrencyInput handleInputChange={handleInputChange} /> 
+              <CurrencyInput
+                currencyName="currency"
+                name="goalAmount"
+                placeholder="Goal Amount"
+                handleInputChange={handleInputChange}
+                value={formData.goalAmount || ""}
+              />
             </>
           )}
           {entity === "inventory" && (
@@ -134,6 +196,7 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.itemName || ""}
               />
               <input
                 name="quantity"
@@ -142,32 +205,32 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.quantity || ""}
               />
-              <input
+              <CurrencyInput
+                currencyName="currency"
                 name="pricePerUnit"
-                type="number"
-                placeholder="Price per Unit"
-                onChange={handleInputChange}
-                style={styles.input}
-                required
+                placeholder="Price Per Unit"
+                handleInputChange={handleInputChange}
+                value={formData.pricePerUnit || ""}
               />
-              <select style={styles.input} name="unit" onChange={handleInputChange} required>
+              <select
+                style={styles.input}
+                name="unit"
+                onChange={handleInputChange}
+                required
+                value={formData.unit || ""}
+              >
                 <option value="">Select Unit</option>
                 <option value="kg">Kg</option>
                 <option value="liter">Litre</option>
                 <option value="ton">Tones</option>
                 <option value="piece">Pieces</option>
               </select>
-              <label style={styles.input}>Availability:
-                <input
-                 type="checkbox"
-                 name="isAvailable"
-                 onChange={handleInputChange}
-                 required
-                 style={{marginLeft: "10px"}}
-                />
-              </label>
-
+              <FarmInput
+                onChange={handleInputChange}
+                value={formData.farm || ""}
+              />
             </>
           )}
           {entity === "farms" && (
@@ -178,13 +241,15 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.name || ""}
               />
               <input
                 name="location"
-                placeholder="Location (latitude, longitude)"
+                placeholder="Location (Coordinates)"
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.location || ""}
               />
               <input
                 name="size"
@@ -193,12 +258,13 @@ const ManagePage = () => {
                 onChange={handleInputChange}
                 style={styles.input}
                 required
+                value={formData.size || ""}
               />
             </>
           )}
           <div style={styles.formActions}>
             <button type="submit" style={styles.submitButton}>
-              Submit
+              {editMode ? "Update" : "Submit"}
             </button>
             <button
               type="button"
@@ -219,7 +285,14 @@ const ManagePage = () => {
         <thead>
           <tr>
             <th style={styles.tableHeader}>Name</th>
-            <th style={styles.tableHeader}>Details</th>
+            <th style={{ ...styles.tableHeader}}>Details</th>
+            {data.some((item) => item.goalAmount !== undefined) && (
+              <th style={styles.tableHeader}>Goal Amount</th>
+            )}
+            {data.some((item) => item.hasOwnProperty("currentAmount")) && (
+              <th style={styles.tableHeader}>Current Amount</th>
+            )}
+            <th style={styles.tableHeader}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -227,16 +300,48 @@ const ManagePage = () => {
             data.map((item) => (
               <tr key={item._id}>
                 <td style={styles.tableCell}>
-                  {item.name || item.itemName || "N/A"}
+                  {item.name || item.itemName || item.title || "N/A"}
                 </td>
                 <td style={styles.tableCell}>
                   {item.description || item.quantity || item.location || "N/A"}
+                  {item.unit ? ` (${item.unit})` : ""}
+                </td>
+                {item.goalAmount !== undefined && (
+                  <td style={styles.tableCell}>
+                    {item.goalAmount ? `${item.goalAmount} ${item.currency || ""}` : ""}
+                  </td>
+                )}
+                {item.hasOwnProperty("currentAmount") && (
+                  <td style={styles.tableCell}>
+                    {item.currentAmount !== undefined
+                      ? `${item.currentAmount} ${item.currency || ""}`
+                      : ""}
+                  </td>
+                )}
+                <td style={{...styles.tableCell}}>
+                  <button onClick={() => handleEdit(item._id)} style={{...styles.editButton}}>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item._id)}
+                    style={{...styles.deleteButton, marginTop: "20px"}}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="2" style={styles.tableCell}>
+              <td
+                colSpan={
+                  2 +
+                  (data.some((item) => item.goalAmount !== undefined) ? 1 : 0) +
+                  (data.some((item) => item.hasOwnProperty("currentAmount")) ? 1 : 0) +
+                  1
+                }
+                style={styles.tableCell}
+              >
                 No data available
               </td>
             </tr>
@@ -349,6 +454,24 @@ const styles = {
     textAlign: "center",
     marginTop: "20px",
   },
+  editButton: {
+    padding: "5px 10px",
+    backgroundColor: "#ffc107",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    marginRight: "10px",
+  },
+  deleteButton: {
+    padding: "5px 10px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+
 };
 
 export default ManagePage;

@@ -76,7 +76,7 @@ router.get('/user-farms', isAuthenticate,
 
 
 // Inventory Routes
-router.post('/inventory/:farmId',
+router.post('/inventory',
   isAuthenticate,
   authorizeRoles('Farmer'),
   InventoryController.createInventory

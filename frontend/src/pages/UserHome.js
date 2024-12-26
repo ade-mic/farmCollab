@@ -11,6 +11,7 @@ const UserHome = () => {
   });
 
   const [hovered, setHovered] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +20,7 @@ const UserHome = () => {
         const userProjectsResponse = await getUserProjects();
         const userInventoryResponse = await getUserInventory();
         const userFarmsResponse = await getUserFarms();
+        console.log(userInventoryResponse);
 
         setData({
           user: userProfileResponse.data.data,

@@ -7,7 +7,7 @@ const styles = {
   },
 };
 
-const CurrencyInput = ({ handleInputChange }) => {
+const CurrencyInput = ({ currencyName, name, placeholder, handleInputChange }) => {
   const [currency, setCurrency] = useState('NGN');
   const [amount, setAmount] = useState('');
 
@@ -15,7 +15,7 @@ const CurrencyInput = ({ handleInputChange }) => {
     setCurrency(e.target.value);
     handleInputChange({
       target: {
-        name: 'currency',
+        name: {currencyName},
         value: e.target.value,
       },
     });
@@ -25,7 +25,7 @@ const CurrencyInput = ({ handleInputChange }) => {
     setAmount(e.target.value);
     handleInputChange({
       target: {
-        name: 'goalAmount',
+        name:  name ,
         value: e.target.value,
       },
     });
@@ -47,9 +47,9 @@ const CurrencyInput = ({ handleInputChange }) => {
           <option value="NGN">NGN (₦)</option>
         </select>
         <input
-          name="goalAmount"
+          name={name}
           type="number"
-          placeholder="Goal Amount"
+          placeholder={placeholder}
           value={amount}
           onChange={handleAmountChange}
           style={styles.input}

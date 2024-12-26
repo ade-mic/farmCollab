@@ -12,8 +12,8 @@ const FarmSchema = new Schema({
     required: true 
   },
   location: {
-    latitude: { type: Number, required: true }, 
-    longitude: { type: Number, required: true },
+    type: String, 
+    required: true
   },
   size: {
     type: Number,

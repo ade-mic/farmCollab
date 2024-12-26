@@ -17,6 +17,7 @@ const ProjectSchema = new Schema({
     },
     currency: {
       type: String,
+      default: "NGN",
       required: true
     },
     currentAmount: {

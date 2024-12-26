@@ -72,7 +72,7 @@ UserSchema.methods.comparePassword = async function (enterPassword) {
 UserSchema.methods.jwtToken = function () {
   const user = this
   return jwt.sign({ id: user._id, role: user.role }, process.env.SECRETKEY, {
-    expiresIn: '1h',
+    expiresIn: '52h',
   })
 }
 

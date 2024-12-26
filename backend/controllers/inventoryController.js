@@ -5,11 +5,12 @@ class InventoryController {
   // Create an inventory
   static async createInventory(req, res) {
     try {
-      const { farmId } = req.params
-      const { name, quantity, pricePerUnit, unit, available }  = req.body;
+      const { farmId, itemName, quantity, pricePerUnit, unit, available }  = req.body;
+      const userId = req.user.id;
       const inventoryItem = new Inventory({
         farmId,
-        name,
+        userId,
+        itemName,
         quantity,
         pricePerUnit,
         unit,
