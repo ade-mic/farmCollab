@@ -12,7 +12,6 @@ import { AuthProvider } from './context/AuthContext';
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
         <Navbar />
         <div style={{ paddingTop: '10%' }} >
           <Routes>
@@ -26,7 +25,6 @@ export default function App() {
           </Routes>
         </div>
         <Footer />
-      </Router>
     </AuthProvider>
   );
 }
