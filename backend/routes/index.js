@@ -7,6 +7,7 @@ import InventoryController from '../controllers/inventoryController.js';
 import isAuthenticate from '../middleware/authenticate.js';
 import { authorizeRoles } from '../middleware/authorization.js';
 import EnsureOwnership from '../middleware/ensureOwnership.js';
+import Payment from '../utils/payment.js';
 
 
 const router = express.Router();
@@ -124,6 +125,14 @@ router.delete('/orders/:id',
   EnsureOwnership.order,
   OrderController.deleteOrder
 );
+router.get('/user-orders',
+  isAuthenticate,
+  OrderController.getUserOrders
+);
 
+router.post('/payment',
+  isAuthenticate,
+  Payment.processPayment
+);
 
 export default router

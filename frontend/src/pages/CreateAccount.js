@@ -30,7 +30,7 @@ const CreateAccount = () => {
   };
 
   return (
-    <div>
+    <div style={{ marginTop: '150px' }}>
       <AuthForm title="Create Account" fields={fields} onSubmit={handleSubmit} errorMessage={errorMessage} />
       <div style={{ textAlign: 'center' }}>
         <p>

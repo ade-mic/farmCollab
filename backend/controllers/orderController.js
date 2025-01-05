@@ -220,6 +220,25 @@ class OrderController {
       });
     }
   }
+
+  // Get all orders by a user
+  static async getUserOrders(req, res) {
+    try {
+      const buyerId = req.user.id;
+      const orders = await Order.find({
+        buyerId,
+      })
+        .populate("buyerId", "name")
+        .populate({path:"inventoryId", select: "name unit"}); 
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error fetching user orders",
+        error: error.message,
+      });
+    }
+  }
+  
 }
 
 export default OrderController;

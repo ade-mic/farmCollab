@@ -1,16 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import ViewOrders from "../components/ViewOrders";
 
 const GeneralUserHome = ({ firstName }) => {
+  const [showViewOrders, setShowViewOrders] = useState(false);
+
+  const toggleViewOrders = () => {
+    setShowViewOrders((prev) => !prev);
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.welcome}>Welcome, {firstName || "User"}!</h1>
 
       <div style={styles.actions}>
-        <Link to="/orders" style={styles.actionButton}>
-          View Orders
-        </Link>
+        <button style={styles.actionButton} onClick={toggleViewOrders}>
+          {showViewOrders ? "Close Orders" : "View Orders"}
+        </button>
       </div>
+
+      {/* Render the ViewOrders component only when toggled on */}
+      {showViewOrders && <ViewOrders />}
     </div>
   );
 };
@@ -18,29 +27,24 @@ const GeneralUserHome = ({ firstName }) => {
 const styles = {
   container: {
     maxWidth: "800px",
-    margin: "50px auto",
+    margin: "150px auto",
     padding: "20px",
     backgroundColor: "#f9f9f9",
+    textAlign: "center",
   },
   welcome: {
     fontSize: "2em",
-    marginBottom: "20px",
   },
   actions: {
-    display: "flex",
-    justifyContent: "space-between",
+    marginTop: "20px",
   },
   actionButton: {
-    flex: 1,
-    margin: "0 10px",
     padding: "10px 20px",
     backgroundColor: "#27A745",
     color: "#fff",
     border: "none",
-    borderRadius: "4px",
+    borderRadius: "5px",
     cursor: "pointer",
-    textDecoration: "none",
-    textAlign: "center",
   },
 };
 

@@ -1,3 +1,4 @@
+import { WidthFull } from "@mui/icons-material";
 import React from "react";
 
 const Footer = () => {
@@ -18,8 +19,6 @@ const Footer = () => {
               <a href="/" style={styles.link}>
                 Home
               </a>
-            </li>
-            <li style={styles.listItem}>
               <a href="/about" style={styles.link}>
                 About
               </a>
@@ -28,17 +27,19 @@ const Footer = () => {
               <a href="/contact" style={styles.link}>
                 Contact
               </a>
-            </li>
-            <li style={styles.listItem}>
               <a href="/privacy" style={styles.link}>
                 Privacy Policy
               </a>
             </li>
+            <li style={styles.listItem}>
+              <a href="/available-produce" style={styles.link}>
+                Produce
+              </a>
+              <a href="/available-projects" style={styles.link}>
+                Projects
+                </a>
+            </li>
           </ul>
-        </div>
-        <div style={styles.contact}>
-          <h3 style={styles.title}>Contact Us</h3>
-          <p style={styles.text}>Email: ademic.aina@gmail.com</p>
         </div>
       </div>
       <div style={styles.footerBottom}>
@@ -50,65 +51,63 @@ const Footer = () => {
 
 const styles = {
   footer: {
-    margin: "10% 0 0 0",
-    postion: "fixed",
-    bottom: 0,
-    Width: "100%",
     backgroundColor: "#28a745",
     color: "#fff",
     textAlign: "center",
-    borderRadius: "20px",
+    padding: "0",
+    marginTop: "auto",
   },
   container: {
     display: "flex",
     justifyContent: "space-between",
-    maxWidth: "1200px",
-    margin: "0 auto",
-    paddingBottom: "20px",
+    padding: "7px",
   },
   about: {
     flex: 1,
-    paddingRight: "10px",
+    padding: "0 7px",
   },
   links: {
     flex: 1,
-    paddingLeft: "20px",
+    padding: "0 10px",
   },
   contact: {
     flex: 1,
+    padding: "0 10px",
   },
   title: {
-    fontSize: "1.5rem",
-    marginBottom: "15px",
+    fontSize: "0.8rem",
+    marginBottom: "5px",
   },
   text: {
     fontSize: "1rem",
-    marginBottom: "5px",
+    lineHeight: "1.1",
   },
   list: {
-    listStyleType: "none",
+    listStyle: "none",
     padding: 0,
+    margin: 0,
   },
   listItem: {
-    marginBottom: "5px",
+    display: "flex",
+    justifyContent: "space-between",
+    Width: "20px",
+    marginBottom: "10px",
   },
   link: {
+    flex: "1 1 20%",
     color: "#fff",
     textDecoration: "none",
-    fontSize: "1rem",
-    transition: "color 0.3s",
-  },
-  linkHover: {
-    color: "#28a745",
+    textAlign: "center",
+    padding: "1px",
   },
   footerBottom: {
-    marginTop: "1px",
-    borderTop: "1px solid #28a745",
-    paddingTop: "1px",
+    marginTop: "10px",
+    borderTop: "1px solid #fff",
+    paddingTop: "5px",
   },
   footerText: {
-    fontSize: "1rem",
-    color: "#bdc3c7",
+    fontSize: "0.5rem",
+    color: "#ccc",
   },
 };
 

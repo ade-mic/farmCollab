@@ -3,12 +3,12 @@ import HeroSection from "../components/HeroSection.jsx";
 import AboutSection from "../components/AboutSection.jsx";
 import FeaturesSection from "../components/FeaturesSectio.jsx";
 import TestimonialsSection from "../components/TestimonialsSection.jsx";
-import { Padding } from "@mui/icons-material";
+
 
 const LandingPage = () => {
   return (
-    <div>
-      <HeroSection style={{ marginTop:'0px', PaddingTop:'0px'}} />
+    <div style={{ marginTop:'0px', paddingTop:'0'}}>
+      <HeroSection  />
       <AboutSection />
       <FeaturesSection />
       <TestimonialsSection />

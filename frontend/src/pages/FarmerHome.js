@@ -39,7 +39,7 @@ const FarmerHome = ({ data, firstName }) => {
 const styles = {
   container: {
     maxWidth: "800px",
-    margin: "50px auto",
+    margin: "150px auto",
     padding: "20px",
     backgroundColor: "#f9f9f9",
   },

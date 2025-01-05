@@ -52,6 +52,9 @@ export const deleteProject = (projectId) => {
     },
   });
 }
+export const getAllProjects = () => {
+  return api.get('/projects');
+}
 
 // Inventory API
 export const createInventory = (inventoryData) => {
@@ -86,7 +89,10 @@ export const deleteInventory = (inventoryId) => {
       Authorization: `Bearer ${token}`,
     },
   });
-} 
+}
+export const getAllInventory = () => {
+  return api.get('/inventory');
+}
 
 // Farm API
 export const createFarm = (farmData) => {
@@ -122,6 +128,50 @@ export const deleteFarm = (farmId) => {
   });
 }
 
+// Orders API
+export const createOrder = (orderData) => {
+  const token = getToken();
+  return api.post('/orders', orderData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const getUserOrders = () => {
+  const token = getToken();
+  return api.get('/user-orders', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const updateOrder = (orderId, orderData) => {
+  const token = getToken();
+  return api.put(`/orders/${orderId}`, orderData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+export const deleteOrder = (orderId) => {
+  const token = getToken();
+  return api.delete(`/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export const paymentIntent = (orderData) => {
+  const token = getToken();
+  return api.post('/payment', orderData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
 // Fetch entity data
 export const getEntityData = (entity) => {
   const token = getToken();
@@ -131,5 +181,6 @@ export const getEntityData = (entity) => {
     },
   });
 };
+
 
 export default api;

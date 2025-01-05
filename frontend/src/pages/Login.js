@@ -27,7 +27,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div style={{marginTop: '150px'}}>
       <AuthForm title="Login" fields={fields} onSubmit={handleSubmit} errorMessage={errorMessage} />
       <div style={{ textAlign: 'center' }}>
         <p>

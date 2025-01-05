@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Pagination from "../components/Pagination";
+import currency from "../utils/currency";
+import { getAllProjects } from "../api";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -8,15 +10,13 @@ const AvailableProjects = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // Simulate fetching data from an API
     const fetchProjects = async () => {
-      const data = Array.from({ length: 25 }, (_, i) => ({
-        title: `Project ${i + 1}`,
-        description: `Description for project ${i + 1}`,
-        goal: Math.floor(Math.random() * 10000) + 5000,
-        raised: Math.floor(Math.random() * 5000),
-      }));
-      setProjects(data);
+    try {
+      const response = await getAllProjects();
+      setProjects(response.data.projects);
+    } catch (error) {
+      console.error(error);
+    }
     };
 
     fetchProjects();
@@ -35,7 +35,7 @@ const AvailableProjects = () => {
             <h2>{project.title}</h2>
             <p>{project.description}</p>
             <p>
-              Raised: ${project.raised} / ${project.goal}
+              Raised: {currency[project.currency]} {project.currentAmount} / {currency[project.currency]} {project.goalAmount}
             </p>
             <button style={styles.supportButton}>Support Project</button>
           </div>
@@ -64,7 +64,7 @@ const styles = {
     gap: "20px",
   },
   projectCard: {
-    flex: "1 1 calc(50% - 20px)",
+    flex: "1 1 calc(33.33% - 20px)",
     border: "1px solid #ddd",
     padding: "20px",
     borderRadius: "8px",
