@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserProfile, getUserProjects, getUserInventory, getUserFarms } from "../api";
+import { getUserProfile, getUserProjects, getUserInventory, getUserFarms, getUserOrders } from "../api";
 import FarmerHome from "./FarmerHome";
 import GeneralUserHome from "./GeneralUserHome";
 
@@ -20,12 +20,14 @@ const UserHome = () => {
         const userProjectsResponse = await getUserProjects();
         const userInventoryResponse = await getUserInventory();
         const userFarmsResponse = await getUserFarms();
+        const userOrderResponse = await getUserOrders();
 
         setData({
           user: userProfileResponse.data.data,
           projects: userProjectsResponse.data.projects.length,
           inventory: userInventoryResponse.data.inventory.length,
           farms: userFarmsResponse.data.farms.length,
+          orders: userOrderResponse.data.orders.length,
         });
       } catch (err) {
         setError(err.message);

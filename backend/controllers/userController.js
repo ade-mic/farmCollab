@@ -64,6 +64,12 @@ class UserController {
       // find user by email
       const user = await User.findOne({ email: req.body.email })
 
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found'
+        })
+      }
+
       // check if password matched
       const isMatched = await user.comparePassword(req.body.password)
 

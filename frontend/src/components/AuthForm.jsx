@@ -28,6 +28,7 @@ const AuthForm = ({ title, fields, onSubmit, errorMessage }) => {
     try {
       await onSubmit(dataToSend);
     } catch (error) {
+      console.log("Error:", error);
       setError(error.response?.data?.message || "An error occurred. Please try again.");
     }
   };

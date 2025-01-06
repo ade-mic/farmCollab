@@ -15,6 +15,7 @@ import {
 } from "../api";
 import CurrencyInput from "../components/CurrencyInput";
 import FarmInput from "../components/FarmInput";
+import currency from "../utils/currency";
 
 const ManagePage = () => {
   const [entity, setEntity] = useState("projects");
@@ -207,13 +208,6 @@ const ManagePage = () => {
                 required
                 value={formData.quantity || ""}
               />
-              <CurrencyInput
-                currencyName="currency"
-                name="pricePerUnit"
-                placeholder="Price Per Unit"
-                handleInputChange={handleInputChange}
-                value={formData.pricePerUnit || ""}
-              />
               <select
                 style={styles.input}
                 name="unit"
@@ -230,6 +224,13 @@ const ManagePage = () => {
               <FarmInput
                 onChange={handleInputChange}
                 value={formData.farm || ""}
+              />
+              <CurrencyInput
+                currencyName="currency"
+                name="pricePerUnit"
+                placeholder="Price Per Unit"
+                handleInputChange={handleInputChange}
+                value={formData.pricePerUnit || ""}
               />
             </>
           )}
@@ -308,13 +309,13 @@ const ManagePage = () => {
                 </td>
                 {item.goalAmount !== undefined && (
                   <td style={styles.tableCell}>
-                    {item.goalAmount ? `${item.goalAmount} ${item.currency || ""}` : ""}
+                    {item.goalAmount ? `${currency[item.currency]|| ""} ${item.goalAmount} ` : ""}
                   </td>
                 )}
                 {item.hasOwnProperty("currentAmount") && (
                   <td style={styles.tableCell}>
                     {item.currentAmount !== undefined
-                      ? `${item.currentAmount} ${item.currency || ""}`
+                      ? `${currency[item.currency] || ""} ${item.currentAmount} `
                       : ""}
                   </td>
                 )}
@@ -357,7 +358,7 @@ const ManagePage = () => {
 const styles = {
   container: {
     maxWidth: "900px",
-    margin: "0 auto",
+    margin: "150px auto",
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "8px",

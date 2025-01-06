@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Assumes you are using React Router
-import { jwtDecode } from 'jwt-decode'; // Install this library for decoding JWT tokens
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; 
 
 export const AuthContext = createContext();
 
@@ -10,17 +10,18 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    
+
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
         const isTokenExpired = decodedToken.exp * 1000 < Date.now();
-        
+
         if (isTokenExpired) {
+          console.warn('Token expired. Logging out.');
           handleLogout();
-          navigate('/login'); // Redirect to the login page
+          navigate('/login'); // Redirect user to login if token is expired.
         } else {
-          setIsLoggedIn(true);
+          setIsLoggedIn(true); // Mark user as logged in if token is valid.
         }
       } catch (error) {
         console.error('Invalid token:', error);

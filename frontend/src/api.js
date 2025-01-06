@@ -37,6 +37,7 @@ export const getUserProjects = () => {
   });
 };
 export const updateProject = (projectId, projectData) => {
+  console.log(projectData);
   const token = getToken();
   return api.put(`/projects/${projectId}`, projectData, {
     headers: {
@@ -145,9 +146,26 @@ export const getUserOrders = () => {
     },
   });
 };
+export const getSellerOrders = () => {
+  const token = getToken();
+  console.log('getting seller orders');
+  return api.get('/seller-orders', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 export const updateOrder = (orderId, orderData) => {
   const token = getToken();
   return api.put(`/orders/${orderId}`, orderData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+export const updateOrderStatus = (orderId, orderData) => {
+  const token = getToken();
+  return api.put(`/orders/${orderId}/status`, orderData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -19,6 +19,10 @@ const FarmerHome = ({ data, firstName }) => {
           <h2 style={styles.statNumber}>{data.inventory}</h2>
           <p style={styles.statLabel}>{data.inventory > 1 ? "Inventory Items" : "Inventory Item"}</p>
         </div>
+        <div style={styles.statCard}>
+          <h2 style={styles.statNumber}>{data.orders}</h2>
+          <p style={styles.statLabel}>{data.orders > 1 ? "Order Items" : "Order Item"}</p>
+        </div>
       </div>
 
       <div style={styles.actions}>
@@ -30,6 +34,9 @@ const FarmerHome = ({ data, firstName }) => {
         </Link>
         <Link to="/manage-inventory" style={styles.actionButton}>
           Manage Inventory
+        </Link>
+        <Link to="/user-orders" style={styles.actionButton}>
+          View Orders
         </Link>
       </div>
     </div>

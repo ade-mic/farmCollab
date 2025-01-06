@@ -25,7 +25,7 @@ const ProjectSchema = new Schema({
       default: 0
     },
     creatorId: {
-      type: mongoose.Schema.ObjectId,
+      type: String,
       ref: 'User',
     },
     participants: [

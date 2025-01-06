@@ -6,25 +6,61 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useContext(AuthContext);
-  const { cartItems } = useContext(CartContext); // Assuming cartItems is an array of items in the cart
+  const { cartItems } = useContext(CartContext);
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleLogin = () => navigate('/login');
   const handleLogout = () => {
     logout();
     navigate('/');
   };
-  const handleCreateAccount = () => navigate('/createAccount');
-  const handleUserHome = () => navigate('/user-home');
+  const handleDashboard = () => navigate('/user-home');
   const handleAvailableProduce = () => navigate('/available-produce');
   const handleAvailableProjects = () => navigate('/available-projects');
   const handleCart = () => navigate('/shopping-cart');
+
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleMenuClose}
+      PaperProps={{
+        style: { width: '200px' },
+      }}
+    >
+      <div>
+      <MenuItem onClick={handleAvailableProjects}>Projects</MenuItem>
+      <MenuItem onClick={handleAvailableProduce}>Produce</MenuItem>
+      <MenuItem onClick={handleCart}>Shopping Cart</MenuItem>
+      {isLoggedIn ? (
+        <>
+          <MenuItem onClick={handleDashboard}>Dashboard</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </>
+      ) : (
+        <>
+          <MenuItem onClick={handleLogin}>Login</MenuItem>
+          <MenuItem onClick={() => navigate('/createAccount')}>Create Account</MenuItem>
+        </>
+      )}
+      </div>
+    </Menu>
+  );
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: '#28a745', color: '#fff', width: '100%' }}>
@@ -43,63 +79,77 @@ export default function Navbar() {
           </a>
         </Typography>
 
-        {/* Navigation Links */}
-        <Button
-          color="inherit"
-          sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
-          onClick={handleAvailableProjects}
-        >
-          Projects
-        </Button>
-        <Button
-          color="inherit"
-          sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
-          onClick={handleAvailableProduce}
-        >
-          Produce
-        </Button>
-
-        {/* Shopping Cart */}
-        <IconButton color="inherit" onClick={handleCart} sx={{ ml: 2 }}>
-          <Badge badgeContent={cartItems?.length || 0} color="error">
-            <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
-
-        {/* Authentication Links */}
-        {isLoggedIn ? (
+        {isMobile ? (
           <>
-            <Button
+            {/* Mobile Menu */}
+            <IconButton
+              size="large"
+              edge="end"
               color="inherit"
-              onClick={handleUserHome}
-              sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+              aria-label="menu"
+              onClick={handleMenuOpen}
             >
-              Dashboard
-            </Button>
-            <Button
-              color="inherit"
-              onClick={handleLogout}
-              sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
-            >
-              Logout
-            </Button>
+              <MenuIcon />
+            </IconButton>
+            {renderMenu}
           </>
         ) : (
           <>
+            {/* Desktop Links */}
             <Button
               color="inherit"
-              onClick={handleLogin}
               sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+              onClick={handleAvailableProjects}
             >
-              Login
+              Projects
             </Button>
             <Button
               color="inherit"
-              onClick={handleCreateAccount}
               sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+              onClick={handleAvailableProduce}
             >
-              Create Account
+              Produce
             </Button>
+            <IconButton color="inherit" onClick={handleCart} sx={{ ml: 2 }}>
+              <Badge badgeContent={cartItems?.length || 0} color="error">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+            {isLoggedIn ? (
+              <>
+                <Button
+                  color="inherit"
+                  onClick={handleDashboard}
+                  sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  color="inherit"
+                  onClick={handleLogout}
+                  sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  color="inherit"
+                  onClick={handleLogin}
+                  sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+                >
+                  Login
+                </Button>
+                <Button
+                  color="inherit"
+                  onClick={() => navigate('/createAccount')}
+                  sx={{ textTransform: 'none', '&:hover': { backgroundColor: '#4B5945' } }}
+                >
+                  Create Account
+                </Button>
+              </>
+            )}
           </>
         )}
       </Toolbar>

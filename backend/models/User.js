@@ -1,57 +1,56 @@
 import mongoose from "mongoose";
 import { randomUUID } from 'crypto';
-import  jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const { Schema,  model } = mongoose;
+const { Schema, model } = mongoose;
 
+// Profile Subdocument Schema
+const ProfileSchema = new Schema({
+  profilePicture: { type: String },
+  farmName: { type: String },
+  location: { type: String },
+  contactNumber: { type: String },
+});
+
+// Main User Schema
 const UserSchema = new Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
-  email:{
+  email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true
+    lowercase: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   role: {
     type: String,
-    enum: ['Farmer', 'Buyer', 'Distributor', 'NGO' ],
-    default: 'Farmer'
+    enum: ['Farmer', 'Buyer', 'Distributor', 'NGO'],
+    default: 'Farmer',
   },
-  profile: {
-    profilePicture:
-    { type: String },
-    farmName: {
-      type: String,
-    },
-    location: {
-      type: String
-    },
-    contactNumber: {
-      type: String
-    }
-  },
+  profile: ProfileSchema, // Use Profile Schema
   createdAt: {
-  type: Date,
-  default: Date.now
-}  
-})
+    type: Date,
+    default: Date.now,
+  },
+});
 
-UserSchema.pre('save', function (next) {
+// Hash Password Before Save
+UserSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
-    this.password = bcrypt.hashSync(this.password, 12)
+    this.password = await bcrypt.hash(this.password, 12);
   }
-  next()
-})
+  next();
+});
 
+// Hash Password on Update
 UserSchema.pre('findOneAndUpdate', async function (next) {
   const update = this.getUpdate();
 
@@ -64,18 +63,22 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
   next();
 });
 
+// Compare Password
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
-UserSchema.methods.comparePassword = async function (enterPassword) {
-  return bcrypt.compareSync(enterPassword, this.password)
-}
-
+// Generate JWT Token
 UserSchema.methods.jwtToken = function () {
-  const user = this
+  const user = this;
+  if (!process.env.SECRETKEY) {
+    throw new Error("SECRETKEY is not defined in the environment variables");
+  }
   return jwt.sign({ id: user._id, role: user.role }, process.env.SECRETKEY, {
     expiresIn: '52h',
-  })
-}
+  });
+};
 
-const User = model('User', UserSchema)
+const User = model('User', UserSchema);
 
 export default User;

@@ -100,7 +100,7 @@ router.get('/user-inventory', isAuthenticate, InventoryController.getUserInvento
 
 
 // Order Routes
-router.post('/orders/:inventoryId',
+router.post('/orders',
   isAuthenticate,
   OrderController.placeOrder
 );
@@ -110,14 +110,12 @@ router.get('/orders',
 router.get('/orders/:id',
   OrderController.getOrderById
 );
-router.put('/orders/:id/',
+router.put('/orders/:id',
   isAuthenticate,
-  EnsureOwnership.order,
   OrderController.updateOrder
 );
 router.put('/orders/:id/status',
   isAuthenticate,
-  EnsureOwnership.order,
   OrderController.updateOrderStatus
 );
 router.delete('/orders/:id',
@@ -128,6 +126,10 @@ router.delete('/orders/:id',
 router.get('/user-orders',
   isAuthenticate,
   OrderController.getUserOrders
+);
+router.get('/seller-orders',
+  isAuthenticate,
+  OrderController.getSellerOrders
 );
 
 router.post('/payment',

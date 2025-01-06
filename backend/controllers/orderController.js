@@ -1,65 +1,95 @@
+import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Inventory from "../models/Inventory.js";
 
 class OrderController {
   // Create a new order
   static async placeOrder(req, res) {
-    try {
-      const { inventoryId } = req.params;
-      const buyerId = req.user.id
-      const { quantity, status, deliveryDate } = req.body;
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-      // validate input
-      if (!inventoryId || quantity <=0 ) {
+    try {
+      const buyerId = req.user?.id;
+      const { items } = req.body;
+
+      // Validate user authentication
+      if (!buyerId) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+      }
+
+      // Validate input data
+      if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ success: false, message: "Invalid input data" });
       }
 
-      // find the inventory item
-      const inventoryItem = await Inventory.findById(inventoryId);
-      if (!inventoryItem) {
-        return res.status(404).json({
-          success: false,
-          message: "inventory item not found"
-        })
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 2);
+
+      // Aggregate items by inventory ID to avoid duplicate orders
+      const aggregatedItems = items.reduce((acc, item) => {
+        if (!acc[item._id]) {
+          acc[item._id] = { ...item, quantity: 0 };
+        }
+        acc[item._id].quantity += item.quantity;
+        return acc;
+      }, {});
+
+      const orders = [];
+
+      for (const item of Object.values(aggregatedItems)) {
+        const inventoryId = item._id;
+        const { quantity } = item;
+
+        if (!inventoryId || !Number.isInteger(quantity) || quantity <= 0) {
+          await session.abortTransaction();
+          return res.status(400).json({ success: false, message: "Invalid input data" });
+        }
+
+        const inventoryItem = await Inventory.findOneAndUpdate(
+          { _id: inventoryId, quantity: { $gte: quantity } },
+          { $inc: { quantity: -quantity } },
+          { new: true, session }
+        );
+
+        if (!inventoryItem) {
+          await session.abortTransaction();
+          return res.status(400).json({
+            success: false,
+            message: `Insufficient stock for ${item.name} or item not found`,
+          });
+        }
+
+        const totalPrice = inventoryItem.pricePerUnit * quantity;
+
+        const order = await Order.create(
+          [
+            {
+              buyerId,
+              inventoryId,
+              quantity,
+              totalPrice,
+              status: "Pending",
+              deliveryDate,
+            },
+          ],
+          { session }
+        );
+
+        orders.push(order[0]);
       }
 
-      // check stock availability
-      if (inventoryItem.quantity === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Out of stock"
-        })
-      }
-
-      if (inventoryItem.quantity < quantity) {
-        return res.status(400).json({
-        success: false,
-        message: `Insufficient stock. Only ${inventoryItem.quantity} ${inventoryItem.unit}`})
-      }
-
-          // Calculate total price
-      const totalPrice = inventoryItem.pricePerUnit * quantity;
-
-      // Create the order
-      const order = await Order.create({
-        buyerId,
-        inventoryId,
-        quantity,
-        totalPrice,
-        status: status,
-        deliveryDate: new Date(deliveryDate),
-      });
-
-      // Update inventory quantity
-      inventoryItem.quantity -= quantity;
-      await inventoryItem.save();
+      await session.commitTransaction();
+      session.endSession();
 
       res.status(201).json({
         success: true,
         message: "Order placed successfully",
-        order,
+        orders,
       });
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      console.error("Error placing order:", error);
       res.status(500).json({
         success: false,
         message: "Error placing order",
@@ -71,7 +101,9 @@ class OrderController {
   // Get all orders
   static async getAllOrders(req, res) {
     try {
-      const orders = await Order.find().populate("buyerId", "name").populate({path:"inventoryId", select: "name unit"});
+      const orders = await Order.find()
+        .populate("buyerId", "name")
+        .populate({ path: "inventoryId", select: "name unit" });
       res.status(200).json({
         success: true,
         orders,
@@ -92,7 +124,7 @@ class OrderController {
 
       const order = await Order.findById(id)
         .populate("buyerId", "name")
-        .populate({path:"inventoryId", select: "name unit"});
+        .populate({ path: "inventoryId", select: "name unit" });
 
       if (!order) {
         return res.status(404).json({
@@ -114,16 +146,19 @@ class OrderController {
     }
   }
 
+  // Update an order's quantity or delivery date
   static async updateOrder(req, res) {
     try {
       const { id } = req.params;
       const { quantity, deliveryDate } = req.body;
+
       if (!quantity || quantity <= 0) {
         return res.status(400).json({
           success: false,
           message: "Invalid input data",
         });
       }
+
       const order = await Order.findById(id);
 
       if (!order) {
@@ -132,14 +167,22 @@ class OrderController {
           message: "Order not found",
         });
       }
-      const { pricePerUnit } = await Inventory.findById(order.inventoryId).select('pricePerUnit');
-      const totalPrice = pricePerUnit * quantity;
+
+      const inventoryItem = await Inventory.findById(order.inventoryId);
+      if (!inventoryItem) {
+        return res.status(404).json({ success: false, message: "Inventory item not found" });
+      }
+
+      const totalPrice = inventoryItem.pricePerUnit * quantity;
       order.quantity = quantity;
       order.totalPrice = totalPrice;
+
       if (deliveryDate) {
         order.deliveryDate = new Date(deliveryDate);
       }
+
       await order.save();
+
       res.status(200).json({
         success: true,
         message: "Order updated successfully",
@@ -170,7 +213,7 @@ class OrderController {
       const order = await Order.findByIdAndUpdate(
         id,
         { status },
-        { new: true } 
+        { new: true }
       );
 
       if (!order) {
@@ -221,19 +264,52 @@ class OrderController {
     }
   }
 
-  // Get all orders by a user
+  // Get all orders by a specific user
   static async getUserOrders(req, res) {
     try {
       const buyerId = req.user.id;
-      const orders = await Order.find({
-        buyerId,
-      })
+
+      const orders = await Order.find({ buyerId })
         .populate("buyerId", "name")
-        .populate({path:"inventoryId", select: "name unit"}); 
+        .populate({ path: "inventoryId", select: "name unit" });
+
+      res.status(200).json({
+        success: true,
+        orders,
+      });
     } catch (error) {
       res.status(500).json({
         success: false,
         message: "Error fetching user orders",
+        error: error.message,
+      });
+    }
+  }
+
+  // Get all orders by a specific seller
+  static async getSellerOrders(req, res) {
+    try {
+      const sellerId = req.user.id;
+  
+      // Find all inventory items associated with the seller
+      const sellerInventoryIds = await Inventory.find({ userId: sellerId }).distinct("_id");
+  
+      // Find orders where the inventoryId matches any of the seller's inventory
+      const orders = await Order.find({ inventoryId: { $in: sellerInventoryIds } })
+      // Populate buyer details with just the name
+        .populate("buyerId", "name") 
+        .populate({ path: "inventoryId", select: "itemName unit" }); // Populate inventory details with just the name and unit
+  
+      // Respond with the orders
+      res.status(200).json({
+        success: true,
+        orders,
+      });
+    } catch (error) {
+      // Handle errors
+      res.status(500).json({
+        success: false,
+        message: "Error fetching seller orders",
         error: error.message,
       });
     }

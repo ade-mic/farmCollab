@@ -15,7 +15,7 @@ const CurrencyInput = ({ currencyName, name, placeholder, handleInputChange }) =
     setCurrency(e.target.value);
     handleInputChange({
       target: {
-        name: {currencyName},
+        name: currencyName,
         value: e.target.value,
       },
     });

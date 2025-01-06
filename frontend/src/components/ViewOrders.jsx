@@ -33,71 +33,34 @@ const ViewOrders = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Your Orders</h2>
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Products</th>
-            <th>Total Price</th>
-            <th>Status</th>
-            <th>Delivery Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.orderId}>
-              <td>{order.orderId}</td>
-              <td>
-                {order.products.map((product, index) => (
-                  <div key={index}>
-                    {product.produce} - {product.quantity} units @ $
-                    {product.price.toFixed(2)}
-                  </div>
-                ))}
-              </td>
-              <td>
-                $
-                {order.products
-                  .reduce(
-                    (total, product) => total + product.price * product.quantity,
-                    0
-                  )
-                  .toFixed(2)}
-              </td>
-              <td>{order.status}</td>
-              <td>{order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "N/A"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <div style={styles.actions}>
+
+    <Link to="/user-orders" style={styles.actionButton}>
+      View Orders
+    </Link>
+  </div>
+    
   );
 };
 
 const styles = {
-  container: {
-    padding: "20px",
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
   },
-  heading: {
+  actionButton: {
+    flex: 1,
+    margin: "0 10px",
+    padding: "10px 20px",
+    backgroundColor: "#27A745",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    textDecoration: "none",
     textAlign: "center",
-    marginBottom: "20px",
   },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  loading: {
-    textAlign: "center",
-    fontSize: "18px",
-    marginTop: "20px",
-  },
-  noOrders: {
-    textAlign: "center",
-    fontSize: "18px",
-    marginTop: "20px",
-  },
-};
+}
+
 
 export default ViewOrders;
