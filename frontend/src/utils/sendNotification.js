@@ -2,7 +2,7 @@ import emailjs from "@emailjs/browser";
 
 
 // initialize emailjs with your user id
-emailjs.init(process.env.EMAILJS_USER_API_ID);
+emailjs.init(process.env.REACT_APP_EMAILJS_USER_API_ID);
 
 const sendCustomerEmailNotification = (customerName, orderDetails) => {
   const templateParams = {
@@ -11,7 +11,7 @@ const sendCustomerEmailNotification = (customerName, orderDetails) => {
   };
 
   emailjs
-    .send(process.env.EMAILJS_SERVICE_ID, process.env.EMAILJS_TEMPLATE_ID, templateParams)
+    .send(process.env.REACT_APP_EMAILJS_SERVICE_ID, process.env.REACT_APP_EMAILJS_TEMPLATE_ID, templateParams)
     .then((response) => console.log('Email sent successfully:', response.status, response.text))
     .catch((error) => console.error('Error sending email:', error));
 };
@@ -23,7 +23,7 @@ const sendSellerEmailNotification = (sellerName, orderDetails) => {
   };
 
   emailjs
-    .send(process.env.EMAILJS_SERVICE_ID, process.env.EMAILJS_TEMPLATE_ID, templateParams)
+    .send(process.env.REACT_APP_EMAILJS_SERVICE_ID, process.env.REACT_APP_EMAILJS_TEMPLATE_ID, templateParams)
     .then((response) => console.log('Email sent successfully:', response.status, response.text))
     .catch((error) => console.error('Error sending email:', error));
 }

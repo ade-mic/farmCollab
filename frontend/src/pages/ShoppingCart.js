@@ -53,10 +53,11 @@ const ShoppingCart = () => {
         paymentMethod: 'MockCard',
         cartItems,
       });
-      console.log('Payment intent:', paymentResponse.data);
-
-      sendSellerEmailNotification(user?.name || 'Customer', cartItems);
-      setStatus('Order confirmed and payment successful!');
+      // console.log('Payment intent:', paymentResponse.data);
+      // sendSellerEmailNotification(user?.name || 'Customer', cartItems);
+      // console.log(cartItems);
+      // sendCustomerEmailNotification("Sellers name" || 'Customer', cartItems);
+      // setStatus('Order confirmed and payment successful!');
       clearCart();
       navigate('/user-orders');
     } catch (error) {

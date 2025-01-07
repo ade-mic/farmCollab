@@ -3,10 +3,10 @@
 class Payment{
     static async processPayment(req, res){
         const { amount, paymentMethod, cartItems } = req.body;
-        console.log('Processing payment...');
-        console.log('Amount:', amount);
-        console.log('Payment Method:', paymentMethod);
-        console.log('Cart Items:', cartItems);
+        // console.log('Processing payment...');
+        // console.log('Amount:', amount);
+        // console.log('Payment Method:', paymentMethod);
+        // console.log('Cart Items:', cartItems);
         const isSuccess = Math.random() > 0.1;
         if (isSuccess) {
             res.status(200).json({
