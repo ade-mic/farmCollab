@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getSellerOrders, updateOrderStatus } from '../api';
 import { useNavigate } from 'react-router-dom';
+import DashBoardButton from '../components/DashBoardButton';
 
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -98,6 +99,9 @@ const SellerOrders = () => {
           </tbody>
         </table>
       )}
+      <div style={styles.returnButton}>
+        <DashBoardButton to="/user-home" />
+      </div>
     </div>
   );
 };
@@ -171,6 +175,10 @@ const styles = {
     textAlign: 'center',
     fontSize: '18px',
     color: 'red',
+  },
+  returnButton: {
+    textAlign: 'center',
+    marginTop: '20px',
   },
 };
 

@@ -16,6 +16,7 @@ import {
 import CurrencyInput from "../components/CurrencyInput";
 import FarmInput from "../components/FarmInput";
 import currency from "../utils/currency";
+import DashBoardButton from "../components/DashBoardButton";
 
 const ManagePage = () => {
   const [entity, setEntity] = useState("projects");
@@ -351,6 +352,9 @@ const ManagePage = () => {
       </table>
 
       {error && <p style={styles.error}>{error}</p>}
+      <div style={styles.returnButton}>
+        <DashBoardButton to={"/user-home"} />
+      </div>
     </div>
   );
 };
@@ -471,6 +475,10 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+  },
+  returnButton: {
+    textAlign: "center",
+    marginTop: "20px",
   },
 
 };

@@ -69,7 +69,7 @@ class ProjectController {
     static async subscribeToProject(req, res) {
       try {
         const { id } = req.params; // Project ID from URL
-        const { contributionAmount } = req.body; // Amount contributed by the user
+        const contributionAmount  = parseFloat(req.body.contributionAmount);
         const userId = req.user.id; // Logged-in user's ID from the JWT or session
     
         // Validate contribution amount
@@ -82,7 +82,6 @@ class ProjectController {
     
         // Find the project by ID
         const project = await Project.findById(id);
-    
         if (!project) {
           return res.status(404).json({ success: false, message: "Project not found" });
         }
@@ -120,6 +119,17 @@ class ProjectController {
           message: "Error subscribing to project",
           error: error.message,
         });
+      }
+    }
+
+    // Projects participated by a user
+    static async getSubscribedProjects(req, res) {
+      try {
+        const userId = req.user.id;
+        const projects = await Project.find({ "participants.userId": userId });
+        res.status(200).json({ success: true, projects });
+      } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching user's projects", error: error.message });
       }
     }
 

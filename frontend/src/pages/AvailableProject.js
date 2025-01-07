@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../components/Pagination";
 import currency from "../utils/currency";
 import { getAllProjects } from "../api";
+import { supportProject } from "../api";
 
 const ITEMS_PER_PAGE = 10;
 
 const AvailableProjects = () => {
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeSupport, setActiveSupport] = useState(null);
+  const[supportAmount, setSupportAmount] = useState(0);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -21,6 +25,29 @@ const AvailableProjects = () => {
 
     fetchProjects();
   }, []);
+
+  const handleSupportToggle = (projectId) => {
+    setActiveSupport((prev) => (prev === projectId ? null : projectId));
+  };
+
+  const handleSupportSubmit = async (projectId) => {
+    console.log("Supporting project:", projectId, "with amount:", supportAmount);
+    try {
+      const response = await supportProject(projectId, { contributionAmount: supportAmount });
+      console.log("Support response:", response);
+    } catch (error) {
+      setError("Error supporting project:" + error.message);
+      console.error("Error supporting project:", error);
+    }
+    
+
+    setSupportAmount(0);
+    setActiveSupport(null);
+  }
+
+  const handleProjectSupport = (projectId) => {
+    console.log("Supporting project:", projectId);
+  }
 
   const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -37,7 +64,33 @@ const AvailableProjects = () => {
             <p>
               Raised: {currency[project.currency]} {project.currentAmount} / {currency[project.currency]} {project.goalAmount}
             </p>
-            <button style={styles.supportButton}>Support Project</button>
+            <button style={styles.supportButton}
+            onClick={() => handleSupportToggle(project._id)}
+            >
+              {activeSupport === project._id ? "Cancel" : "Support"}
+            </button>
+            {activeSupport === project._id && (
+              <div>
+                {error && <p style={{ color: "red" }}>{error}</p>}
+                <form
+                style={styles.supportForm}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSupportSubmit(project._id);
+                }}
+                >
+                <label>Amount {currency[project.currency]} :</label>
+                <input
+                  type="number"
+                  value={supportAmount}
+                  onChange={(e) => setSupportAmount(e.target.value)}
+                  style={styles.input}
+                />
+                <button type="submit" style={styles.submitButton}
+                onClick={() => handleSupportSubmit(project._id)}>Submit</button>
+                </form>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -73,6 +126,25 @@ const styles = {
   supportButton: {
     padding: "10px 20px",
     backgroundColor: "#28a745",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  supportForm: {
+    marginTop: "10px",
+  },
+  input: {
+    padding: "10px",
+    marginRight: "10px",
+    marginLeft: "10px",
+    marginBottom: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+  },
+  submitButton: {
+    padding: "10px 20px",
+    backgroundColor: "#123524",
     color: "#fff",
     border: "none",
     borderRadius: "4px",

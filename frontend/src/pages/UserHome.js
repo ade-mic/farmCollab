@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getUserProfile, getUserProjects, getUserInventory, getUserFarms, getUserOrders } from "../api";
 import FarmerHome from "./FarmerHome";
 import GeneralUserHome from "./GeneralUserHome";
+import { getSellerOrders } from "../api";
 
 const UserHome = () => {
   const [data, setData] = useState({
@@ -21,6 +22,7 @@ const UserHome = () => {
         const userInventoryResponse = await getUserInventory();
         const userFarmsResponse = await getUserFarms();
         const userOrderResponse = await getUserOrders();
+        const SellerOrdersResponse = await getSellerOrders();
 
         setData({
           user: userProfileResponse.data.data,
@@ -28,6 +30,7 @@ const UserHome = () => {
           inventory: userInventoryResponse.data.inventory.length,
           farms: userFarmsResponse.data.farms.length,
           orders: userOrderResponse.data.orders.length,
+          sales: SellerOrdersResponse.data.orders.length,
         });
       } catch (err) {
         setError(err.message);

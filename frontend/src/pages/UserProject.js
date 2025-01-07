@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { getUserOrders } from '../api';
+import { getProjectSupported } from '../api';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import currency  from '../utils/currency';
 import DashBoardButton from '../components/DashBoardButton';
 
-const Orders = () => {
-  const [orders, setOrders] = useState([]);
+const UserProject = () => {
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useContext(UserContext);
@@ -14,24 +15,24 @@ const Orders = () => {
   const firstName = user?.data?.name.split(" ")[0];
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchProjects = async () => {
       try {
-        const response = await getUserOrders();
-        setOrders(response.data.orders || []); 
+        const response = await getProjectSupported();
+        setProjects(response.data.projects || []); 
       } catch (error) {
-        setError('Error fetching orders');
-        console.error('Error fetching orders:', error);
+        setError('Error fetching projects');
+        console.error('Error fetching projects:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrders();
+    fetchProjects();
   }, []);
 
-  const handleOrderClick = () => {
-    alert(`Your Order is being processed`)
-    // navigate(`/order/${orderId}`);
+  const handleProjectClick = () => {
+    alert(`Your project is being processed`)
+    // navigate(`/project/${orderId}`);
   };
 
   if (loading) {
@@ -52,39 +53,31 @@ const Orders = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}> {firstName}'s Orders</h1>
-      {orders.length === 0 ? (
-        <p style={styles.noOrders}>No orders found.</p>
+      <h1 style={styles.header}> {firstName}'s {projects.length > 1 ? "Collabs": "Collab"}</h1>
+      {projects.length === 0 ? (
+        <p style={styles.noOrders}>No Collab found.</p>
       ) : (
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Order ID</th>
-              <th style={styles.th}>Date</th>
+              <th style={styles.th}>Collab ID</th>
+              <th style={styles.th}>Goal Amount</th>
               <th style={styles.th}>Status</th>
-              <th style={styles.th}>Delivery Date</th>
-              <th style={styles.th}>Total</th>
               <th style={styles.th}>Action</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
-              <tr key={order._id} style={styles.row}>
-                <td style={styles.td}>{order._id}</td>
+            {projects.map((project) => (
+              <tr key={project._id} style={styles.row}>
+                <td style={styles.td}>{project._id}</td>
                 <td style={styles.td}>
-                  {new Date(order.createdAt).toLocaleDateString()}
+                {currency[project.currency]} {project.goalAmount}
                 </td>
-                <td style={styles.td}>{order.status}</td>
-                <td style={styles.td}>
-                  {order.deliveryDate
-                    ? new Date(order.deliveryDate).toLocaleDateString()
-                    : '-'}
-                </td>
-                <td style={styles.td}>${order.totalPrice.toFixed(2)}</td>
+                <td style={styles.td}> {currency[project.currency]} {project.currentAmount}</td>
                 <td style={styles.td}>
                   <button
                     style={styles.button}
-                    onClick={() => handleOrderClick()}
+                    onClick={() => handleProjectClick()}
                   >
                     View
                   </button>
@@ -95,7 +88,7 @@ const Orders = () => {
         </table>
       )}
       <div style={styles.returnButton}>
-      <DashBoardButton to={"/user-home"} />
+        <DashBoardButton to={"/user-home"} />
       </div>
     </div>
   );
@@ -167,9 +160,9 @@ const styles = {
     padding: '20px',
   },
   returnButton: {
-    marginTop: '20px',
     textAlign: 'center',
-  }
+    marginTop: '20px',
+  },
 };
 
-export default Orders;
+export default UserProject;

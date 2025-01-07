@@ -56,7 +56,22 @@ export const deleteProject = (projectId) => {
 export const getAllProjects = () => {
   return api.get('/projects');
 }
-
+export const supportProject = (projectId, supportData) => {
+  const token = getToken();
+  return api.post(`/projects/${projectId}/subscribe`, supportData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+export const getProjectSupported = () => {
+  const token = getToken();
+  return api.get('/user-subscriptions', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 // Inventory API
 export const createInventory = (inventoryData) => {
   const token = getToken();
@@ -148,7 +163,6 @@ export const getUserOrders = () => {
 };
 export const getSellerOrders = () => {
   const token = getToken();
-  console.log('getting seller orders');
   return api.get('/seller-orders', {
     headers: {
       Authorization: `Bearer ${token}`,

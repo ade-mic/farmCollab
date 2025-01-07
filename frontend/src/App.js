@@ -15,6 +15,7 @@ import { UserProvider } from './context/UserContext';
 import Orders from './pages/Orders';
 import SellerOrders from './pages/SellerOrders';
 import ShoppingCart from './pages/ShoppingCart';
+import UserProject from './pages/UserProject';
 import React from 'react';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/shopping-cart" element={<ShoppingCart />} />
             <Route path="/user-orders" element={<Orders />} />
             <Route path="/seller-orders" element={<SellerOrders />} />
+            <Route path="/user-projects" element={<UserProject />} />
           </Routes>
         </main>
         <Footer />

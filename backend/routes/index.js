@@ -46,10 +46,17 @@ router.post('/projects/:id/subscribe',
    isAuthenticate,
    ProjectController.subscribeToProject
 );
-
+// Route for getting all projects created by a user
 router.get('/user-projects',
   isAuthenticate,
-  ProjectController.getProjectsByUser);
+  ProjectController.getProjectsByUser
+);
+// Route for getting all projects subscribed to by a user
+router.get('/user-subscriptions',
+  isAuthenticate,
+  ProjectController.getSubscribedProjects
+);
+
 
 // Farm Routes
 router.post('/farms',
