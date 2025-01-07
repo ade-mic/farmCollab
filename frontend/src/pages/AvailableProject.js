@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
+import { useContext } from "react";
 import Pagination from "../components/Pagination";
 import currency from "../utils/currency";
 import { getAllProjects } from "../api";
 import { supportProject } from "../api";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 10;
 
 const AvailableProjects = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeSupport, setActiveSupport] = useState(null);
@@ -27,26 +32,21 @@ const AvailableProjects = () => {
   }, []);
 
   const handleSupportToggle = (projectId) => {
+    if (!isLoggedIn) {
+      setError("Please login to support a project.");
+      navigate("/login");
+    }
     setActiveSupport((prev) => (prev === projectId ? null : projectId));
   };
 
   const handleSupportSubmit = async (projectId) => {
-    console.log("Supporting project:", projectId, "with amount:", supportAmount);
     try {
-      const response = await supportProject(projectId, { contributionAmount: supportAmount });
-      console.log("Support response:", response);
+      await supportProject(projectId, { contributionAmount: supportAmount });
     } catch (error) {
       setError("Error supporting project:" + error.message);
-      console.error("Error supporting project:", error);
     }
-    
-
     setSupportAmount(0);
     setActiveSupport(null);
-  }
-
-  const handleProjectSupport = (projectId) => {
-    console.log("Supporting project:", projectId);
   }
 
   const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);

@@ -5,10 +5,12 @@ import { sendCustomerEmailNotification, sendSellerEmailNotification } from '../u
 import { createOrder, paymentIntent } from '../api';
 import { UserContext } from '../context/UserContext';
 import currency from '../utils/currency';
+import { AuthContext } from '../context/AuthContext';
 
 const ShoppingCart = () => {
   const { cartItems, removeFromCart, clearCart } = useContext(CartContext);
   const { user } = useContext(UserContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
@@ -33,6 +35,9 @@ const ShoppingCart = () => {
   };
 
   const handleCheckout = async () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
     if (!canCheckout()) {
       alert('Checkout is only possible if all items are in the same currency.');
       return;
