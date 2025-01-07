@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.53ccbb31.css",
+    "main.js": "/static/js/main.69174150.js",
+    "static/media/farming-less-agriculture-svgrepo-com.svg": "/static/media/farming-less-agriculture-svgrepo-com.3e78f0e88e9af0582fab.svg",
+    "index.html": "/index.html",
+    "main.53ccbb31.css.map": "/static/css/main.53ccbb31.css.map",
+    "main.69174150.js.map": "/static/js/main.69174150.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.53ccbb31.css",
+    "static/js/main.69174150.js"
+  ]
+}
