@@ -21,6 +21,11 @@ const OrderSchema = new Schema(
       enum: ["Pending", "Shipped", "Delivered"],
       default: "Pending",
     },
+    currency: {
+      type: String,
+      default: "NGN",
+      required: true
+    },
     deliveryDate: {
       type: Date,
       required: false,

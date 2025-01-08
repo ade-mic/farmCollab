@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getSellerOrders, updateOrderStatus } from '../api';
 import { useNavigate } from 'react-router-dom';
 import DashBoardButton from '../components/DashBoardButton';
+import currency from '../utils/currency';
 
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -81,7 +82,7 @@ const SellerOrders = () => {
                     ? new Date(order.deliveryDate).toLocaleDateString()
                     : '-'}
                 </td>
-                <td style={styles.td}>${order.totalPrice.toFixed(2)}</td>
+                <td style={styles.td}>{currency[order.currency]} {order.totalPrice.toFixed(2)}</td>
                 <td style={styles.td}>
                   <select
                     value={order.status}
@@ -89,7 +90,6 @@ const SellerOrders = () => {
                     style={styles.select}
                   >
                     <option value="Pending">Pending</option>
-                    <option value="Processing">Processing</option>
                     <option value="Shipped">Shipped</option>
                     <option value="Delivered">Delivered</option>
                   </select>

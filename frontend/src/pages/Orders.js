@@ -3,6 +3,7 @@ import { getUserOrders } from '../api';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import DashBoardButton from '../components/DashBoardButton';
+import currency from '../utils/currency';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -80,7 +81,7 @@ const Orders = () => {
                     ? new Date(order.deliveryDate).toLocaleDateString()
                     : '-'}
                 </td>
-                <td style={styles.td}>${order.totalPrice.toFixed(2)}</td>
+                <td style={styles.td}>{currency[order.currency]} {order.totalPrice.toFixed(2)}</td>
                 <td style={styles.td}>
                   <button
                     style={styles.button}
